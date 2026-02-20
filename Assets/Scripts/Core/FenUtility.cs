@@ -1,5 +1,8 @@
-﻿namespace Chess {
-	using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Chess {
 	public static class FenUtility {
 
 		static Dictionary<char, int> pieceTypeFromSymbol = new Dictionary<char, int> () {
@@ -7,6 +10,60 @@
 		};
 
 		public const string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+	    public static string GetRandFen()
+		{
+			Dictionary<int, char> row = new Dictionary<int, char>();
+
+			Random rand = new Random();
+			int darkBishopFile = rand.Next(4) * 2; //random in (0, 2, 4, 6)
+			int lightBishopFile = rand.Next(4) * 2 + 1; //random in (1, 3, 5, 7)
+
+			//place bishop in files
+			row.Add(darkBishopFile, 'b');
+			row.Add(lightBishopFile, 'b');
+
+			//get remaining files to place queen in
+			List<int> remainingFiles = new List<int>();
+			for (int i = 0; i < 8; i++)
+			{
+				if (!row.ContainsKey(i)) remainingFiles.Add(i);
+			}
+
+			//place queen in files & remove from available
+			int queenFile = remainingFiles[rand.Next(remainingFiles.Count)];
+			remainingFiles.Remove(queenFile);
+			row.Add(queenFile, 'q');
+
+			//place knights in files and remove from available
+			for (int i = 0; i < 2; i++)
+			{
+				int knightFile = remainingFiles[rand.Next(remainingFiles.Count)];
+				remainingFiles.Remove(knightFile);
+				row.Add(knightFile, 'n');
+			}
+
+			//place rooks and king in order in remaining 
+			row.Add(remainingFiles[0], 'r');
+			row.Add(remainingFiles[1], 'k');
+			row.Add(remainingFiles[2], 'r');
+
+			var sortedRow = row.OrderBy(c => c.Key).ToArray();
+			string finalRow = "";
+			foreach (var item in sortedRow)
+			{
+				finalRow = $"{finalRow}{item.Value}";
+			}
+
+			foreach (var item in sortedRow)
+			{
+				Console.WriteLine($"Piece: {item.Key} - Location: {item.Value}");
+			}
+
+			Console.WriteLine(finalRow);
+
+			return $"{finalRow}/pppppppp/8/8/8/8/PPPPPPPP/{finalRow.ToUpper()}  w KQkq - 0 1";
+		}
 
 		// Load position from fen string
 		public static LoadedPositionInfo PositionFromFen (string fen) {

@@ -39,6 +39,8 @@ namespace Chess.Game {
 		public Board board { get; private set; }
 		Board searchBoard; // Duplicate version of board used for ai search
 
+		private bool isRandom = false;
+
 		void Start () {
 			//Application.targetFrameRate = 60;
 
@@ -99,11 +101,19 @@ namespace Chess.Game {
 			NewGame (PlayerType.AI, PlayerType.AI);
 		}
 
+		public void SetRandom(bool rand)
+		{
+			isRandom = rand;
+		}
+
 		void NewGame (PlayerType whitePlayerType, PlayerType blackPlayerType) {
 			gameMoves.Clear ();
 			if (loadCustomPosition) {
 				board.LoadPosition (customPosition);
 				searchBoard.LoadPosition (customPosition);
+			} else if (isRandom) {
+				board.LoadRandomPosition();
+				searchBoard.LoadRandomPosition();
 			} else {
 				board.LoadStartPosition ();
 				searchBoard.LoadStartPosition ();

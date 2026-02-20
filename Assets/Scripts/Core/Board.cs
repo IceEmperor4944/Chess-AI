@@ -312,6 +312,11 @@
 			LoadPosition (FenUtility.startFen);
 		}
 
+		public void LoadRandomPosition()
+		{
+			LoadPosition(FenUtility.GetRandFen());
+		}
+
 		// Load custom position from fen string
 		public void LoadPosition (string fen) {
 			Initialize ();
